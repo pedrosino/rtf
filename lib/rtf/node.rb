@@ -8,7 +8,7 @@ module RTF
    class Node
       # Node parent.
       attr_accessor :parent
-      
+
       # Constructor for the Node class.
       #
       # ==== Parameters
@@ -117,7 +117,16 @@ module RTF
         #f1=lambda { |n| n < 128 ? n.chr : n < 256 ? "\\'#{n.to_s(16)}" : "\\u#{n}\\'3f" }
         # Encode as Unicode.
 
-        f=lambda { |n| n < 128 ? n.chr : "\\u#{n}\\'3f" }
+        #f=lambda { |n| n < 128 ? n.chr : "\\u#{n}\\'3f" }
+        ###########################################################################
+        # Pedro Santos - 2016-06-28
+        # I need rtf files for a Java applet which doesn't accept unicode chars
+        # Opening the file with MS Word and saving solves the problem, but makes
+        # the file much bigger with lots of unnecessary stuff. So I'm going to use
+        # a different lambda here, to put special chars in the format "\'e3",
+        # for example.
+        ############################################################################
+        f = lambda {|c| c < 128 ? c.chr : "\\'%x" % c }
         # Ruby 1.9 is safe, cause detect original encoding
         # and convert text to utf-16 first
         if RUBY_VERSION>"1.9.0"
